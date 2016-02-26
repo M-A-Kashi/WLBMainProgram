@@ -10,6 +10,20 @@ void Timer_show (void) ;
 
 char Buf_Tx[2][Max_Robot][_Buffer_Size] ;
 char Buf_Rx[Max_Robot][_Buffer_Size];
+
+typedef union wireless_packet{
+	char s_data[Max_Robot][_Buffer_Size] ;
+	int l_data[Max_Robot][_Buffer_Size/2];
+}wireless_packet;
+wireless_packet wireless_rx;
+
+typedef union status
+{
+	int nri;
+	char cit[2];
+}Status;
+
+Status s;
 char Address[_Address_Width] = { 0x11, 0x22, 0x33, 0x44, 0x55};
 int  Robot_Select ;
 int  LED_time;
