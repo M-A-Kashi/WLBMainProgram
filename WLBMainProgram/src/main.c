@@ -82,7 +82,7 @@ ISR(TCC0_OVF_vect)
 	}
 
 	
-	if (TCE0_CNT > 20)
+	if (TCE0_CNT > 40)
 	{
 		TCE0_CNT = 0;
 		/////////////////////////////////////////////
@@ -147,16 +147,15 @@ ISR(PRX_R)//ID:0=>5
 	uint8_t status_R = NRF24L01_R_ReadReg(STATUSe);
 	if((status_R & _RX_DR) == _RX_DR)
 	{
-		LED_White_R_PORT.OUTSET = LED_White_R_PIN_bm;
 		//		tmprid = ((status_R&0x0e)>>1);
 		//1) read payload through SPI,
 		NRF24L01_R_Read_RX_Buf(Buf_Rx[Robot_Select], _Buffer_Size);
 		//2) clear RX_DR IRQ,
-		status_R=NRF24L01_R_WriteReg(W_REGISTER | STATUSe, _RX_DR );
+		NRF24L01_R_WriteReg(W_REGISTER | STATUSe, _RX_DR );
 		//3) read FIFO_STATUS to check if there are more payloads available in RX FIFO,
 		//4) if there are more data in RX FIFO, repeat from step 1).Buf_Tx[R]
 		
-		if ( Robot_Select == r_id)
+		if (Robot_Select == r_id)
 		{
 			char str[200];
 			uint8_t count ;
@@ -172,16 +171,17 @@ ISR(PRX_R)//ID:0=>5
 
 	}
 	
-	status_R = NRF24L01_R_WriteReg(W_REGISTER|STATUSe,_TX_DS|_MAX_RT);
 	if((status_R&_TX_DS) == _TX_DS)
 	{
 		LED_Green_R_PORT.OUTSET = LED_Green_R_PIN_bm;
+		NRF24L01_R_WriteReg(W_REGISTER|STATUSe,_TX_DS);
 	}
 	
 	if ((status_R&_MAX_RT) == _MAX_RT)
 	{
 		NRF24L01_R_Flush_TX();
 		LED_White_R_PORT.OUTSET = LED_White_R_PIN_bm;
+		NRF24L01_R_WriteReg(W_REGISTER|STATUSe,_MAX_RT);
 	}
 }
 
